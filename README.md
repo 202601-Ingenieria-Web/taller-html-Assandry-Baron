@@ -16,8 +16,8 @@ La aplicación permite:
 | Tecnología | Uso |
 |---|---|
 | HTML5 | Estructura de la página |
-| CSS3 | Estilos, diseño responsive, colores por tipo |
-| JavaScript (ES6+) | Lógica, fetch a la API, manejo de errores |
+| CSS | Estilos, diseño responsive, colores por tipo |
+| JavaScript | Lógica, fetch a la API, manejo de errores |
 | [PokéAPI](https://pokeapi.co) | Fuente de datos de los Pokémon |
 | Google Fonts | Fuentes: *Press Start 2P* y *Roboto* |
 

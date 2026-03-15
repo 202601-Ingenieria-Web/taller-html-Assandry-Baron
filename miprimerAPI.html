@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Primera API - PokéAPI</title>
+
+    <!-- Fuente de Google Fonts para darle estilo al texto -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #0a0a0a;
+        color: #ffffff;
+        font-family: "Roboto", sans-serif;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      header {
+        text-align: center;
+        padding: 30px 0 20px;
+      }
+
+      header h1 {
+        font-family: "Press Start 2P", cursive; /* Fuente estilo pokémon */
+        font-size: 1.6rem;
+        color: #ffcc00;
+        text-shadow: 3px 3px 0px #cc0000; /* Sombra roja */
+        margin-bottom: 10px;
+      }
+
+      header p {
+        color: #aaaaaa;
+        font-size: 0.9rem;
+      }
+
+      /* SECCIÓN DE BÚSQUEDA */
+      .buscador {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+      }
+
+      .buscador input[type="text"] {
+        padding: 12px 18px;
+        width: 280px;
+        border: 2px solid #ffcc00;
+        border-radius: 8px;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.3s;
+      }
+
+      /* Efecto al hacer clicK */
+      .buscador input[type="text"]:focus {
+        border-color: #ff4444;
+      }
+
+      /* Estilo del botón de búsqueda */
+      .buscador button {
+        padding: 12px 22px;
+        background-color: #cc0000;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition:
+          background-color 0.3s,
+          transform 0.1s;
+      }
+
+      .buscador button:hover {
+        background-color: #ff2222;
+        transform: scale(1.05);
+      }
+
+      /* MENSAJE DE ERROR */
+      #mensaje-error {
+        text-align: center;
+        color: #ff4444;
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+        min-height: 20px;
+      }
+
+      /* POKÉMON */
+      #lista-pokemon {
+        display: grid;
+        /* Se ajusta automáticamente según el ancho de pantalla */
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 10px;
+      }
+
+      /* TARJETA DEL POKÉMON */
+      .tarjeta {
+        background-color: #1a1a1a;
+        border: 2px solid #333333;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        transition:
+          transform 0.2s,
+          border-color 0.2s;
+        cursor: default;
+      }
+
+      /* Efecto al pasar el mouse por la tarjeta */
+      .tarjeta:hover {
+        transform: translateY(-5px);
+        border-color: #ffcc00;
+      }
+
+      /* Número del Pokémon (Ej: #001) */
+      .tarjeta .numero {
+        font-size: 0.75rem;
+        color: #888888;
+        margin-bottom: 5px;
+      }
+
+      /* Imagen del Pokémon */
+      .tarjeta img {
+        width: 96px;
+        height: 96px;
+        image-rendering: pixelated;
+      }
+
+      /* Nombre del Pokémon */
+      .tarjeta .nombre {
+        font-family: "Press Start 2P", cursive;
+        font-size: 0.55rem;
+        color: #ffcc00;
+        margin: 8px 0 6px;
+        text-transform: uppercase;
+      }
+
+      /* Etiquetas de tipo (Fuego, Agua, etc.) */
+      .tarjeta .tipos {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+
+      .tarjeta .tipo {
+        padding: 3px 9px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        text-transform: capitalize;
+      }
+
+      /* COLORES DE CADA TIPO */
+      .tipo-fire {
+        background-color: #ff6600;
+      }
+      .tipo-water {
+        background-color: #3399ff;
+      }
+      .tipo-grass {
+        background-color: #33cc66;
+      }
+      .tipo-electric {
+        background-color: #ffcc00;
+        color: #000;
+      }
+      .tipo-ice {
+        background-color: #66ccff;
+        color: #000;
+      }
+      .tipo-fighting {
+        background-color: #cc3300;
+      }
+      .tipo-poison {
+        background-color: #9933cc;
+      }
+      .tipo-ground {
+        background-color: #cc9933;
+      }
+      .tipo-flying {
+        background-color: #6699ff;
+      }
+      .tipo-psychic {
+        background-color: #ff3399;
+      }
+      .tipo-bug {
+        background-color: #99cc00;
+        color: #000;
+      }
+      .tipo-rock {
+        background-color: #996633;
+      }
+      .tipo-ghost {
+        background-color: #663399;
+      }
+      .tipo-dragon {
+        background-color: #6633ff;
+      }
+      .tipo-dark {
+        background-color: #333333;
+      }
+      .tipo-steel {
+        background-color: #999999;
+        color: #000;
+      }
+      .tipo-fairy {
+        background-color: #ff99cc;
+        color: #000;
+      }
+      .tipo-normal {
+        background-color: #aaaaaa;
+        color: #000;
+      }
+
+      /* MENSAJE DE CARGA */
+      #cargando {
+        text-align: center;
+        color: #aaaaaa;
+        font-size: 0.9rem;
+        margin: 20px 0;
+      }
+
+      /* PIE DE PAGINA */
+      footer {
+        text-align: center;
+        color: #555555;
+        font-size: 0.75rem;
+        margin-top: 40px;
+        padding-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ENCABEZADO DE LA APP -->
+    <header>
+      <h1>PokéDex</h1>
+      <p>Busca tu Pokémon favorito usando la PokéAPI</p>
+    </header>
+
+    <!-- SECCIÓN DE BÚSQUEDA -->
+    <div class="buscador">
+      <label for="nombre">
+        <!-- Input para que el usuario escriba el nombre o número del Pokémon. El placeholder le da una pista de ejemplo. -->
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          placeholder="Ej: pikachu, charmander..."
+        />
+      </label>
+
+      <!-- Al hacer clic en este botón se ejecuta la función buscarPokemon(). También se puede buscar presionando Enter (ver JavaScript abajo).-->
+      <button onclick="buscarPokemon()">Buscar</button>
+
+      <!--Botón para cargar los primeros 10 pokémon por defecto.-->
+      <button
+        onclick="cargarPokemonPorDefecto()"
+        style="background-color: #333; border: 2px solid #ffcc00"
+      >
+        Ver primeros 10
+      </button>
+    </div>
+
+    <!-- Aquí se muestra el mensaje de error si hay algún problema -->
+    <p id="mensaje-error"></p>
+
+    <!-- Indicador de carga mientras se espera la respuesta de la API -->
+    <p id="cargando"></p>
+
+    <!-- Cuadrícula donde se insertan las tarjetas de los Pokémon. Este div se llena dinámicamente con JavaScript. -->
+    <div id="lista-pokemon"></div>
+
+    <!-- PIE DE PÁGINA -->
+    <footer>
+      <p>
+        Datos obtenidos de
+        <a href="https://pokeapi.co" style="color: #ffcc00">pokeapi.co</a>
+        &mdash; Taller Ingenieria Web 2026
+      </p>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+      // Al presionar Enter en el input, también se ejecuta la búsqueda
+      document
+        .getElementById("nombre")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            buscarPokemon();
+          }
+        });
+
+      /**
+       * Función: mostrarError
+       * Muestra un mensaje de error en pantalla.
+       * @param {string} mensaje - El texto que se mostrará
+       */
+      function mostrarError(mensaje) {
+        document.getElementById("mensaje-error").textContent = mensaje;
+      }
+
+      /**
+       * Función: limpiarError
+       * Borra cualquier mensaje de error anterior.
+       */
+      function limpiarError() {
+        document.getElementById("mensaje-error").textContent = "";
+      }
+
+      /**
+       * Función: mostrarCargando
+       * Muestra u oculta el mensaje "Cargando..."
+       * @param {boolean} visible - true para mostrar, false para ocultar
+       */
+      function mostrarCargando(visible) {
+        document.getElementById("cargando").textContent = visible
+          ? "⏳ Cargando..."
+          : "";
+      }
+
+      /**
+       * Función: obtenerColorTipo
+       * Devuelve la clase CSS según el tipo del Pokémon.
+       * @param {string} tipo - Nombre del tipo (ej: "fire", "water")
+       * @returns {string} - Clase CSS correspondiente
+       */
+      function obtenerClaseTipo(tipo) {
+        return `tipo tipo-${tipo}`;
+      }
+
+      /**
+       * Función: crearTarjeta
+       * Construye y devuelve el HTML de una tarjeta de Pokémon.
+       * @param {object} datos - Objeto con los datos del Pokémon de la API
+       * @returns {string} - HTML en forma de string
+       */
+      function crearTarjeta(datos) {
+        // Número con ceros adelante: 1 → #001
+        const numero = String(datos.id).padStart(3, "0");
+
+        // Imagen del Pokémon (sprite frontal por defecto)
+        const imagen = datos.sprites.front_default;
+
+        // Nombre con primera letra en mayúscula
+        const nombre = datos.name.charAt(0).toUpperCase() + datos.name.slice(1);
+
+        // Tipos del Pokémon (puede tener 1 o 2)
+        const tiposHTML = datos.types
+          .map(
+            (t) =>
+              `<span class="${obtenerClaseTipo(t.type.name)}">${t.type.name}</span>`,
+          )
+          .join("");
+
+        // Retornamos el HTML completo de la tarjeta
+        return `
+          <div class="tarjeta">
+            <p class="numero">#${numero}</p>
+            <img src="${imagen}" alt="${nombre}" />
+            <p class="nombre">${nombre}</p>
+            <div class="tipos">${tiposHTML}</div>
+          </div>
+        `;
+      }
+
+      /**
+       * Función: buscarPokemon
+       * Lee el input del usuario y consulta la PokéAPI para ese Pokémon.
+       * Muestra la tarjeta o un mensaje de error si no se encuentra.
+       */
+      async function buscarPokemon() {
+        // Limpiamos resultados y errores anteriores
+        limpiarError();
+        document.getElementById("lista-pokemon").innerHTML = "";
+
+        // Leemos el valor del input y lo convertimos a minúsculas
+        const nombrePokemon = document
+          .getElementById("nombre")
+          .value.trim()
+          .toLowerCase();
+
+        // Validamos que el usuario haya escrito algo
+        if (!nombrePokemon) {
+          mostrarError(
+            "⚠️ Por favor escribe el nombre o número de un Pokémon.",
+          );
+          return;
+        }
+
+        // Mostramos indicador de carga
+        mostrarCargando(true);
+
+        try {
+          // Hacemos la petición a la PokéAPI
+          const url = `https://pokeapi.co/api/v2/pokemon/${nombrePokemon}`;
+          const respuesta = await fetch(url);
+
+          // Si la respuesta no es exitosa, lanzamos un error
+          if (!respuesta.ok) {
+            throw new Error(
+              "Pokémon no encontrado. Verifica el nombre o número.",
+            );
+          }
+
+          // Convertimos la respuesta a JSON
+          const datos = await respuesta.json();
+
+          // Ocultamos el cargando
+          mostrarCargando(false);
+
+          // Insertamos la tarjeta en la cuadrícula
+          document.getElementById("lista-pokemon").innerHTML =
+            crearTarjeta(datos);
+        } catch (error) {
+          // Si hay un error (pokémon no existe, sin conexión, etc.)
+          mostrarCargando(false);
+          mostrarError("❌ " + error.message);
+        }
+      }
+
+      /**
+       * Función: cargarPokemonPorDefecto
+       * Carga los primeros 10 Pokémon automáticamente usando la API.
+       * Útil para mostrar contenido al entrar a la app.
+       */
+      async function cargarPokemonPorDefecto() {
+        // Limpiamos todo
+        limpiarError();
+        document.getElementById("lista-pokemon").innerHTML = "";
+        mostrarCargando(true);
+
+        try {
+          // Pedimos la lista de los primeros 10 pokémon
+          const respuestaLista = await fetch(
+            "https://pokeapi.co/api/v2/pokemon?limit=10&offset=0",
+          );
+          const listaJSON = await respuestaLista.json();
+
+          // Para cada pokémon de la lista, pedimos sus detalles
+          const promesas = listaJSON.results.map((p) =>
+            fetch(p.url).then((r) => r.json()),
+          );
+
+          // Esperamos que todas las peticiones terminen
+          const todosLosPokemon = await Promise.all(promesas);
+
+          mostrarCargando(false);
+
+          // Construimos todas las tarjetas y las insertamos
+          const tarjetasHTML = todosLosPokemon
+            .map((p) => crearTarjeta(p))
+            .join("");
+          document.getElementById("lista-pokemon").innerHTML = tarjetasHTML;
+        } catch (error) {
+          mostrarCargando(false);
+          mostrarError("❌ Error al cargar los Pokémon: " + error.message);
+        }
+      }
+
+      // Cargamos los primeros 10 pokémon al abrir la página
+      cargarPokemonPorDefecto();
+    </script>
+  </body>
+</html>
